@@ -12,6 +12,8 @@ const userSchema = mongoose.Schema(
       trim: true,
     },
     email: {
+      type:String,
+      required:true
     },
     password: {
       type: String,
@@ -24,11 +26,21 @@ const userSchema = mongoose.Schema(
       },
     },
     walletMoney: {
+      type:Number,
+      default:0
     },
     address: {
       type: String,
       default: config.default_address,
     },
+    createdAt:{
+      type: Date,
+      default:Date.now
+    },
+    updatedAt:{
+      type: Date,
+      default:Date.now
+    }
   },
   // Create createdAt and updatedAt fields automatically
   {
@@ -43,6 +55,15 @@ const userSchema = mongoose.Schema(
  * @returns {Promise<boolean>}
  */
 userSchema.statics.isEmailTaken = async function (email) {
+
+  const isUserExist=await this.find({"email":email})
+
+  if(isUserExist){
+    return true
+  }
+  return false
+    
+    
 };
 
 
@@ -53,6 +74,9 @@ userSchema.statics.isEmailTaken = async function (email) {
  * Note: The model should be accessible in a different module when imported like below
  * const User = require("<user.model file path>").User;
  */
+
 /**
  * @typedef User
  */
+const User=new mongoose.Schema(userSchema)
+module.exports={User:mongoose.model("User",User)}

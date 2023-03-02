@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const ApiError = require("../utils/ApiError");
 const catchAsync = require("../utils/catchAsync");
 const { userService } = require("../services");
+const { http } = require("winston");
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUser() function
 /**
@@ -39,7 +40,49 @@ const { userService } = require("../services");
  *
  */
 const getUser = catchAsync(async (req, res) => {
+    const id=req.params.id;
+    let user
+    if(id){
+      try{
+        user=await userService.getUserById(id)
+      }catch(err){
+        throw new ApiError(400,err.message)
+      }
+      if(user){
+
+        const obj={
+          _id:user._id.toString(),
+          email:user.email,
+          name:user.name,
+          walletMoney:user.walletMoney
+        }
+
+        return res.status(200).json(obj)
+      }else{
+        throw new ApiError(httpStatus[404],"User not found")
+      }
+    }else{
+      const email=req.query.email
+      try{
+        user=await userService.getUserById(email)
+      }catch(err){
+        throw new ApiError(httpStatus[400],err.message)
+      }
+      if(user){
+        const obj={
+          _id:user._id.toString(),
+          email:user.email,
+          name:user.name,
+          walletMoney:user.walletMoney
+        }
+        return res.status(200).json(obj)
+      }else{
+        throw new ApiError(httpStatus[404],"User not found")
+      }
+    }
+   
 });
+
 
 
 module.exports = {

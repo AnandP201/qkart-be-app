@@ -10,7 +10,14 @@ const bcrypt = require("bcryptjs");
  * @param {String} id
  * @returns {Promise<User>}
  */
+const getUserById=async (id)=>{
+    const user=await User.findOne({"_id":id})
 
+    if(user){
+        return user
+    }
+    return null
+}
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUserByEmail(email)
 /**
  * Get user by email
@@ -18,8 +25,17 @@ const bcrypt = require("bcryptjs");
  * @param {string} email
  * @returns {Promise<User>}
  */
+const getUserByEmail=async (email)=>{
+    const user=await User.findOne({"email":email})
+
+    if(user){
+        return user
+    }
+    return null
+}
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement createUser(user)
+
 /**
  * Create a user
  *  - check if the user with the email already exists using `User.isEmailTaken()` method
@@ -38,8 +54,22 @@ const bcrypt = require("bcryptjs");
  *  "email": "crio-user@gmail.com",
  *  "password": "usersPasswordHashed"
  * }
+ * 
  *
  * 200 status code on duplicate email - https://stackoverflow.com/a/53144807
  */
+const createUser=async (user)=>{
+
+    const isTaken=await User.isEmailTaken(user.email)
+
+    if(isTaken){
+        throw new ApiError(httpStatus[200],"Email already taken")
+    }
+    
+    const newUser=User.create(user)
+    
+    return newUser
+}
 
 
+module.exports={getUserById,getUserByEmail,createUser}
