@@ -19,6 +19,7 @@ const getUserById=async (id)=>{
     return null
 }
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUserByEmail(email)
+
 /**
  * Get user by email
  * - Fetch user object from Mongo using the "email" field and return user object
@@ -63,7 +64,7 @@ const createUser=async (user)=>{
     const isTaken=await User.isEmailTaken(user.email)
 
     if(isTaken){
-        throw new ApiError(httpStatus[200],"Email already taken")
+        throw new ApiError(200,"Email already taken")
     }
     
     const newUser=User.create(user)

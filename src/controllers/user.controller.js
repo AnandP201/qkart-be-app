@@ -5,6 +5,7 @@ const { userService } = require("../services");
 const { http } = require("winston");
 
 // TODO: CRIO_TASK_MODULE_UNDERSTANDING_BASICS - Implement getUser() function
+
 /**
  * Get user details
  *  - Use service layer to get User data
@@ -14,6 +15,9 @@ const { http } = require("winston");
  *  - If data exists for the provided "userId", return 200 status code and the object
  *  - If data doesn't exist, throw an error using `ApiError` class
  *    - Status code should be "404 NOT FOUND"
+ *    - Error message, "User not found"
+ *  - If the user whose token is provided and user whose data to be fetched don't match, throw `ApiError`
+ *    - Status code should be "403 FORBIDDEN"
  *    - Error message, "User not found"
  *
  * 
@@ -34,6 +38,7 @@ const { http } = require("winston");
  *
  * Example response status codes:
  * HTTP 200 - If request successfully completes
+ * HTTP 403 - If request data doesn't match that of authenticated user
  * HTTP 404 - If user entity not found in DB
  * 
  * @returns {User | {address: String}}
@@ -59,14 +64,14 @@ const getUser = catchAsync(async (req, res) => {
 
         return res.status(200).json(obj)
       }else{
-        throw new ApiError(httpStatus[404],"User not found")
+        throw new ApiError(httpStatus.NOT_FOUND,"User not found")
       }
     }else{
       const email=req.query.email
       try{
         user=await userService.getUserById(email)
       }catch(err){
-        throw new ApiError(httpStatus[400],err.message)
+        throw new ApiError(httpStatus.NOT_FOUND,err.message)
       }
       if(user){
         const obj={
@@ -77,7 +82,7 @@ const getUser = catchAsync(async (req, res) => {
         }
         return res.status(200).json(obj)
       }else{
-        throw new ApiError(httpStatus[404],"User not found")
+        throw new ApiError(httpStatus.NOT_FOUND,"User not found")
       }
     }
    
