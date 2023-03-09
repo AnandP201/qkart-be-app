@@ -27,6 +27,7 @@ describe("Cart test", () => {
 
       const res = cartService.checkout(userOne);
       
+      expect(res).toBeDef
       expect(res).rejects.toThrow(ApiError)
       expect(res).rejects.toEqual(
         expect.objectContaining({
