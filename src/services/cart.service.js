@@ -186,7 +186,7 @@ const checkout = async (user) => {
   const cart=await Cart.findOne({"email":user.email})
 
   if(!cart){
-    throw new ApiError(httpStatus.BAD_REQUEST)
+    throw new ApiError(httpStatus.NOT_FOUND)
   }
   if(!user){
     throw new ApiError(httpStatus.BAD_REQUEST)

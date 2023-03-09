@@ -28,8 +28,9 @@ describe("Cart test", () => {
       const res = cartService.checkout(userOne);
       
       expect(res).rejects.toThrow(ApiError)
-      expect(res).rejects.toEqual(expect.objectContaining({
-        statusCode: httpStatus.BAD_REQUEST,
+      expect(res).rejects.toEqual(
+        expect.objectContaining({
+        statusCode: httpStatus.NOT_FOUND,
       }))
       // TODO: CRIO_TASK_MODULE_TEST - Assert if
       /* - ApiError is thrown
