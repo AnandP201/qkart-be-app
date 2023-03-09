@@ -54,18 +54,16 @@ describe("Auth routes", () => {
     });
 
     test("returned token is valid for user", async () => {
-
       const res = await request(app).post("/v1/auth/register").send(newUser);
 
       const req = httpMocks.createRequest({
         headers: { Authorization: `Bearer ${res.body.tokens.access.token}` },
       });
       const next = jest.fn();
-      
+
       await auth(req, httpMocks.createResponse(), next);
 
       expect(next).toHaveBeenCalledWith();
-   
       expect(req.user.email).toEqual(newUser.email);
     });
 
@@ -291,8 +289,6 @@ describe("Auth routes", () => {
         expires,
         tokenTypes.REFRESH
       );
-
-     
       const req = httpMocks.createRequest({
         headers: { Authorization: `Bearer ${refreshToken}` },
       });
@@ -313,6 +309,7 @@ describe("Auth routes", () => {
       await insertUsers([userOne]);
       const expires =
         Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60;
+
       const accessToken = tokenService.generateToken(
         userOne._id,
         expires,
@@ -337,8 +334,8 @@ describe("Auth routes", () => {
 
     test("should call next with unauthorized error if access token is expired", async () => {
       await insertUsers([userOne]);
-
       const expires = Math.floor(Date.now() / 1000) - 1 * 60;
+
       const accessToken = tokenService.generateToken(
         userOne._id,
         expires,
@@ -348,9 +345,9 @@ describe("Auth routes", () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const next = jest.fn();
-    
+
       await auth(req, httpMocks.createResponse(), next);
-      
+
       expect(next).toHaveBeenCalledWith(expect.any(ApiError));
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -367,7 +364,7 @@ describe("Auth routes", () => {
       const next = jest.fn();
 
       await auth(req, httpMocks.createResponse(), next);
-  
+
       expect(next).toHaveBeenCalledWith(expect.any(ApiError));
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
