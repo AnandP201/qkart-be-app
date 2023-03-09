@@ -111,7 +111,7 @@ const addProductToCart = async (user, productId, quantity) => {
  * @param {User} user
  * @param {string} productId
  * @param {number} quantity
- * @returns {Promise<Cart>
+ * @returns {Promise<Cart>}
  * @throws {ApiError}
  */
 const updateProductInCart = async (user, productId, quantity) => {
@@ -172,10 +172,56 @@ const deleteProductFromCart = async (user, productId) => {
   return await cart.save()
 };
 
+// TODO: CRIO_TASK_MODULE_TEST - Implement checkout function
+/**
+ * Checkout a users cart.
+ * On success, users cart must have no products.
+ *
+ * @param {User} user
+ * @returns {Promise}
+ * @throws {ApiError} when cart is invalid
+ */
+const checkout = async (user) => {
+
+  const cart=await Cart.findOne({"email":user.email})
+
+  if(!cart){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+  if(!user){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+  if(cart.cartItems.length===0){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+  if(!(await user.hasSetNonDefaultAddress())){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+  if(user.walletMoney===0){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+
+  let total=0
+  const items=cart.cartItems
+
+  items.forEach((item)=>{
+    total+=parseInt(item.product.cost)*parseInt(item.quantity)
+  })
+  
+  if(user.walletMoney<total){
+    throw new ApiError(httpStatus.BAD_REQUEST)
+  }
+  user.walletMoney=user.walletMoney-total;
+  await user.save()
+
+  cart.cartItems.splice(0,cart.cartItems.length)
+  await cart.save()
+};
 
 module.exports = {
   getCartByUser,
   addProductToCart,
   updateProductInCart,
   deleteProductFromCart,
+  checkout,
 };
