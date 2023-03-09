@@ -20,7 +20,7 @@ describe("User test", () => {
       expect(userResponse._id).toEqual(userOne._id);
 
       // Use toBe() to compare primitive objects - check reference equality
-      // https://stackoverflow.com/a/F5209588
+      // https://stackoverflow.com/a/45209588
       expect(userResponse.name).toBe(userOne.name);
     });
   });
